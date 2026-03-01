@@ -1,0 +1,29 @@
+# PostgreSQL Production Profile
+# Usage: mvn spring-boot:run -Dspring.profiles.active=postgres
+
+spring:
+  h2:
+    console:
+      enabled: false
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/credit_approval_db?currentSchema=public
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:your_password_here}
+    hikari:
+      connection-init-sql: "SET search_path TO public"
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  flyway:
+    locations: classpath:db/migration
+
+camunda:
+  bpm:
+    database:
+      type: postgres
+      schema-update: true

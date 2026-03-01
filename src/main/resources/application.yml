@@ -2,17 +2,10 @@ spring:
   application:
     name: credit-approval-system
 
-  h2:
-    console:
-      enabled: false
-
-  datasource:
-    url: jdbc:postgresql://localhost:5432/credit_approval_db?currentSchema=public
-    driver-class-name: org.postgresql.Driver
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:your_password_here}
-    hikari:
-      connection-init-sql: "SET search_path TO public"
+  # Default profile: h2 (zero-config demo)
+  # Override with: -Dspring.profiles.active=postgres
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:h2}
 
   jpa:
     hibernate:
@@ -20,7 +13,6 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
         use_sql_comments: true
         jdbc:
@@ -29,10 +21,7 @@ spring:
 
   flyway:
     enabled: true
-    default-schema: public
-    create-schemas: true
     baseline-on-migrate: true
-    locations: classpath:db/migration
     baseline-version: 1
     validate-on-migrate: false
     clean-on-validation-error: false
@@ -66,10 +55,6 @@ camunda:
 
     history-level: full
 
-    database:
-      type: postgres
-      schema-update: true
-
     generic-properties:
       properties:
         enableExpressionsInAdhocQueries: true
@@ -80,7 +65,7 @@ external-task:
   base-url: http://localhost:8080/engine-rest
   worker-id: credit-worker-${random.uuid}
   max-tasks: 10
-  lock-duration: 600000  # 10 minutes
+  lock-duration: 600000
   async-response-timeout: 10000
   retry-timeout: 5000
   backoff-strategy: exponential
@@ -152,18 +137,12 @@ logging:
   level:
     root: INFO
     org.camunda: INFO
-    org.camunda.bpm.engine.impl.persistence.entity: DEBUG
     com.creditapp: DEBUG
     org.springframework.web: INFO
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
   pattern:
     console: '%d{yyyy-MM-dd HH:mm:ss} - %msg%n'
-    file: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
   file:
     name: logs/credit-approval-system.log
-    max-size: 10MB
-    max-history: 30
 
 # Management Endpoints (Actuator)
 management:
@@ -174,10 +153,6 @@ management:
   endpoint:
     health:
       show-details: always
-  metrics:
-    export:
-      prometheus:
-        enabled: true
 
 # SpringDoc OpenAPI Configuration
 springdoc:

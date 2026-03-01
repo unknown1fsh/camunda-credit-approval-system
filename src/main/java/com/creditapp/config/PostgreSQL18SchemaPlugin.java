@@ -6,6 +6,7 @@ import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.camunda.bpm.engine.impl.cfg.ProcessEnginePlugin;
 import org.camunda.bpm.engine.impl.interceptor.Command;
 import org.camunda.bpm.engine.impl.interceptor.CommandExecutor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -21,17 +22,14 @@ import java.sql.Statement;
  * yanlış sonuçlar alarak "already exists" veya "tables missing" hatalarına
  * neden olur.
  *
- * Bu eklenti sorunu şöyle çözer:
- * 1. Doğrudan SQL ile act_ge_property tablosunu arar (PG18'de güvenilir)
- * 2. Tablo varsa → schema operasyonlarını tamamen atlar
- * (DatabaseMetaData asla çağrılmaz)
- * 3. Tablo yoksa → normal schema-update: true ile ilk kurulum yapılır
+ * Bu eklenti SADECE "postgres" profili aktifken devreye girer.
  *
  * Camunda 7.23+ PostgreSQL 18'i resmi olarak destekler; bu eklenti
  * Camunda 7.23'e yükseltildiğinde kaldırılabilir.
  */
 @Slf4j
 @Component
+@Profile("postgres")
 public class PostgreSQL18SchemaPlugin implements ProcessEnginePlugin {
 
     private final DataSource dataSource;

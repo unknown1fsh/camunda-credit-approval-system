@@ -10,13 +10,12 @@
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.1-brightgreen)](https://spring.io/projects/spring-boot)
 [![Camunda](https://img.shields.io/badge/Camunda-7.21.0-orange)](https://camunda.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18.1-blue)](https://www.postgresql.org/)
+[![H2](https://img.shields.io/badge/H2-In--Memory-yellow)](https://www.h2database.com/)
 [![License](https://img.shields.io/badge/License-MIT-purple)](LICENSE)
 
-An enterprise-grade, automated credit approval engine built with **Camunda BPM 7**, **Spring Boot 3**, and **PostgreSQL 18**. This system features advanced workflow automation, complex decision logic (DMN), and a unique compatibility layer for the latest PostgreSQL engines.
+An enterprise-grade, automated credit approval engine built with **Camunda BPM 7**, **Spring Boot 3**, and dual database support (**PostgreSQL 18** + **H2 In-Memory**). This system features advanced workflow automation, complex decision logic (DMN), and a unique compatibility layer for the latest PostgreSQL engines.
 
 ### 🏛️ System Architecture
-
-The system follows a modern microservices-ready architecture with a clear separation between the process engine, business logic, and external task workers.
 
 ```mermaid
 graph TD
@@ -30,8 +29,10 @@ graph TD
     end
     
     subgraph "Data Layer"
-        Engine <-->|Persistence| DB[(PostgreSQL 18)]
-        DB <-->|Compatibility Layer| PG18Fix[PG18 Schema Plugin]
+        Engine <-->|Persistence| DB{Database}
+        DB -->|Production| PG[(PostgreSQL 18)]
+        DB -->|Demo/Dev| H2[(H2 In-Memory)]
+        PG <-->|Compatibility| PG18Fix[PG18 Schema Plugin]
     end
     
     Workers -->|Credit Bureau| CB[Credit Bureau API]
@@ -39,8 +40,6 @@ graph TD
 ```
 
 ### 📋 Business Workflow (BPMN)
-
-The core business logic is encapsulated in a high-fidelity BPMN 2.0 process. It handles everything from fraud detection to dynamic manager assignments.
 
 ```mermaid
 graph LR
@@ -67,11 +66,9 @@ graph LR
     NotifyR --> EndR((Rejected))
 ```
 
-### 🧠 Decision Wisdom (DMN)
+### 🧠 Decision Logic (DMN)
 
-We utilize **Decision Model and Notation (DMN)** to keep business rules decoupled from the code.
-
-#### 1. Risk Scoring Engine
+#### Risk Scoring Engine
 | Risk Category | Action | Score Range |
 | :--- | :--- | :--- |
 | **LOW** | APPROVE | 0 - 30 |
@@ -79,45 +76,63 @@ We utilize **Decision Model and Notation (DMN)** to keep business rules decouple
 | **HIGH** | REVIEW | 66 - 85 |
 | **CRITICAL** | REJECT | 86 - 100 |
 
-#### 2. Approval Authority
-Dynamic assignment based on loan amount:
+#### Approval Authority
 - **Manager:** < $100,000
 - **Senior Manager:** $100k - $500k
 - **Director:** > $500,000
 
-### ⚡ Technical Innovation: PostgreSQL 18 Compatibility
+### 💾 Dual Database Support
 
-This project solves a critical industry challenge: **Running Camunda 7.21 on PostgreSQL 18**. 
+| Feature | H2 (Default) | PostgreSQL 18 |
+| :--- | :--- | :--- |
+| **Profile** | `h2` | `postgres` |
+| **Setup Required** | ❌ None | ✅ Database creation |
+| **Use Case** | Demo, Development | Production |
+| **H2 Console** | ✅ `/h2-console` | ❌ N/A |
+| **Persistence** | In-Memory | Disk |
+| **PG18 Plugin** | ❌ Not needed | ✅ Auto-activated |
 
-#### The Solution: `PostgreSQL18SchemaPlugin`
-We developed a sophisticated `ProcessEnginePlugin` that:
-- **Direct SQL Detection:** Uses robust information_schema queries instead of the broken JDBC metadata API.
-- **Pipeline Interception:** Dynamically replaces the `CommandExecutorSchemaOperations` with a `NoOp` executor when tables are detected.
-- **Driver Optimization:** Upgrades the JDBC driver to `42.7.10`.
+### ⚡ PostgreSQL 18 Compatibility Fix
 
-### 🛠️ Installation & Setup
+**Problem:** PostgreSQL 18 changed `DatabaseMetaData.getTables()` behavior, breaking Camunda 7.21's schema detection.
 
+**Solution:** Custom `PostgreSQL18SchemaPlugin` that:
+- Uses direct SQL queries instead of broken JDBC metadata API
+- Dynamically replaces `CommandExecutorSchemaOperations` with a `NoOp` executor
+- Only activates with `postgres` profile via `@Profile("postgres")`
+
+### 🛠️ Quick Start
+
+#### Option A: Zero-Config Demo (H2)
 ```bash
-# Set your environment variables
+# No database setup needed!
+mvn spring-boot:run
+# H2 Console: http://localhost:8080/h2-console
+```
+
+#### Option B: Production (PostgreSQL 18)
+```bash
 export DB_USERNAME=your_username
 export DB_PASSWORD=your_password
-export CAMUNDA_ADMIN_PASSWORD=secure_admin_pass
-
-# Build and Run
-mvn clean install
-mvn spring-boot:run
+mvn spring-boot:run -Dspring.profiles.active=postgres
 ```
+
+### 🔗 Access URLs
+| Service | URL |
+| :--- | :--- |
+| **Main Portal** | http://localhost:8080/ |
+| **H2 Console** | http://localhost:8080/h2-console |
+| **Swagger UI** | http://localhost:8080/swagger-ui.html |
+| **REST API** | http://localhost:8080/engine-rest/ |
 
 ---
 
 <a name="türkçe"></a>
 ## 🇹🇷 Türkçe Versiyon
 
-**Camunda BPM 7**, **Spring Boot 3** ve **PostgreSQL 18** ile geliştirilmiş kurumsal düzeyde, otomatik bir kredi onay motoru. Bu sistem, gelişmiş iş akışı otomasyonu, karmaşık karar mantığı (DMN) ve en yeni PostgreSQL sürümleri için özel bir uyumluluk katmanı içerir.
+**Camunda BPM 7**, **Spring Boot 3** ve çift veritabanı desteği (**PostgreSQL 18** + **H2 In-Memory**) ile geliştirilmiş kurumsal düzeyde, otomatik bir kredi onay motoru.
 
 ### 🏛️ Sistem Mimarisi
-
-Sistem; süreç motoru, iş mantığı ve harici görev çalışanları (external workers) arasında net bir ayrım yapan, modern ve mikro hizmete hazır bir mimariyi takip eder.
 
 ```mermaid
 graph TD
@@ -131,48 +146,46 @@ graph TD
     end
     
     subgraph "Veri Katmanı"
-        Engine <-->|Kalıcılık| DB[(PostgreSQL 18)]
-        DB <-->|Uyumluluk Katmanı| PG18Fix[PG18 Şema Eklentisi]
+        Engine <-->|Kalıcılık| DB{Veritabanı}
+        DB -->|Üretim| PG[(PostgreSQL 18)]
+        DB -->|Demo/Geliştirme| H2[(H2 In-Memory)]
+        PG <-->|Uyumluluk| PG18Fix[PG18 Şema Eklentisi]
     end
     
-    Workers -->|Kredi Kayıt Bürosu| CB[KKB API]
+    Workers -->|KKB| CB[Kredi Kayıt Bürosu API]
     Workers -->|Bildirimler| Email[E-posta/SMS Servisi]
 ```
 
 ### 📋 İş Akışı (BPMN)
-
-Çekirdek iş mantığı, yüksek doğruluklu bir BPMN 2.0 süreci içinde kapsüllenmiştir. Sahtekarlık tespitinden dinamik yönetici atamalarına kadar her şeyi yönetir.
 
 ```mermaid
 graph LR
     Start((Başla)) --> Validate[Başvuru Doğrulama]
     Validate --> Fraud{Sahtekarlık Kontrolü}
     Fraud -- Tespit Edildi --> Reject[Otomatik Red]
-    Fraud -- Temiz --> CB[Kredi Kayıt Bürosu Kontrolü]
+    Fraud -- Temiz --> CB[KKB Kontrolü]
     CB --> Risk[Risk Puanlama DMN]
     Risk --> RiskLevel{Risk Seviyesi?}
     
     RiskLevel -- KRİTİK --> Reject
-    RiskLevel -- Normal --> Approver[Onay Yetkilisi Belirleme DMN]
+    RiskLevel -- Normal --> Approver[Onay Yetkilisi DMN]
     
     Approver --> DocReq[Belge Gereksinimleri DMN]
     DocReq --> Assign[Yönetici Atama]
     Assign --> Manual[Yönetici Onayı]
     
     Manual --> Approved{Onaylandı mı?}
-    Approved -- Evet --> Notify[Onay Bildirimi Gönder]
-    Approved -- Hayır --> Rollback[Tazminat İşlemi / Rollback]
+    Approved -- Evet --> Notify[Onay Bildirimi]
+    Approved -- Hayır --> Rollback[Tazminat / Rollback]
     
     Notify --> End((Onaylandı))
-    Rollback --> NotifyR[Red Bildirimi Gönder]
+    Rollback --> NotifyR[Red Bildirimi]
     NotifyR --> EndR((Reddedildi))
 ```
 
 ### 🧠 Karar Mantığı (DMN)
 
-İş kurallarını koddan bağımsız tutmak için **Decision Model and Notation (DMN)** kullanıyoruz.
-
-#### 1. Risk Puanlama Motoru
+#### Risk Puanlama Motoru
 | Risk Kategorisi | Eylem | Puan Aralığı |
 | :--- | :--- | :--- |
 | **DÜŞÜK** | ONAYLA | 0 - 30 |
@@ -180,33 +193,44 @@ graph LR
 | **YÜKSEK** | İNCELE | 66 - 85 |
 | **KRİTİK** | REDDET | 86 - 100 |
 
-#### 2. Onay Yetkisi
-Kredi tutarına göre dinamik atama:
+#### Onay Yetkisi
 - **Yönetici:** < 100.000 $
 - **Kıdemli Yönetici:** 100k - 500k $
 - **Direktör:** > 500.000 $
 
-### ⚡ Teknik İnovasyon: PostgreSQL 18 Uyumluluğu
+### 💾 Çift Veritabanı Desteği
 
-Bu proje, sektördeki kritik bir sorunu çözmektedir: **Camunda 7.21'i PostgreSQL 18 üzerinde çalıştırmak**.
+| Özellik | H2 (Varsayılan) | PostgreSQL 18 |
+| :--- | :--- | :--- |
+| **Profil** | `h2` | `postgres` |
+| **Kurulum** | ❌ Gerekmez | ✅ Veritabanı oluşturma |
+| **Kullanım** | Demo, Geliştirme | Üretim |
+| **H2 Konsolu** | ✅ `/h2-console` | ❌ Yok |
+| **Kalıcılık** | Bellekte | Diskte |
 
-#### Çözüm: `PostgreSQL18SchemaPlugin`
-Geliştirdiğimiz gelişmiş `ProcessEnginePlugin` şunları yapar:
-- **Doğrudan SQL Tespiti:** Bozuk JDBC metadata API'si yerine güçlü information_schema sorgularını kullanır.
-- **Pipeline Müdahalesi:** Tablolar tespit edildiğinde şema operasyonlarını bir `NoOp` (işlemsiz) executor ile değiştirerek çakışmaları önler.
-- **Sürücü Optimizasyonu:** JDBC sürücüsünü `42.7.10` sürümüne yükseltir.
+### ⚡ PostgreSQL 18 Uyumluluk Çözümü
 
-### 🛠️ Kurulum ve Çalıştırma
+**Problem:** PostgreSQL 18, `DatabaseMetaData.getTables()` davranışını değiştirdi ve Camunda 7.21'in şema algılamasını bozdu.
 
+**Çözüm:** Özel `PostgreSQL18SchemaPlugin`:
+- Bozuk JDBC metadata API yerine doğrudan SQL sorguları kullanır
+- `CommandExecutorSchemaOperations`'ı `NoOp` executor ile değiştirir
+- `@Profile("postgres")` ile sadece PostgreSQL profilinde aktifleşir
+
+### 🛠️ Hızlı Başlangıç
+
+#### Seçenek A: Sıfır Konfigürasyon Demo (H2)
 ```bash
-# Ortam değişkenlerini ayarlayın
+# Veritabanı kurulumu gerekmez!
+mvn spring-boot:run
+# H2 Konsolu: http://localhost:8080/h2-console
+```
+
+#### Seçenek B: Üretim (PostgreSQL 18)
+```bash
 export DB_USERNAME=kullanıcı_adınız
 export DB_PASSWORD=şifreniz
-export CAMUNDA_ADMIN_PASSWORD=admin_şifresi
-
-# Derle ve Çalıştır
-mvn clean install
-mvn spring-boot:run
+mvn spring-boot:run -Dspring.profiles.active=postgres
 ```
 
 ---
