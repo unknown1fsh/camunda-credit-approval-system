@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Başvuru Listesi')}"></th:block>
+</head>
+<body>
+    <th:block th:replace="~{fragments/layout :: header}"></th:block>
+
+    <main class="bank-main">
+        <div class="bank-container">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+                <h1 class="bank-page-title mb-0"><i class="bi bi-list-ul me-2"></i>Kredi Başvuruları</h1>
+                <a href="/applications/new" class="bank-btn bank-btn-primary"><i class="bi bi-plus-lg me-1"></i>Yeni Başvuru</a>
+            </div>
+
+            <ul class="nav nav-pills mb-4" role="tablist">
+                <li class="nav-item">
+                    <a th:classappend="${currentFilter == null or currentFilter == ''} ? 'active' : ''" class="nav-link" href="/applications">Tümü</a>
+                </li>
+                <li class="nav-item">
+                    <a th:classappend="${currentFilter == 'PENDING'} ? 'active' : ''" class="nav-link" href="/applications?status=PENDING">Onay Bekleyen</a>
+                </li>
+                <li class="nav-item">
+                    <a th:classappend="${currentFilter == 'APPROVED'} ? 'active' : ''" class="nav-link" href="/applications?status=APPROVED">Onaylanan</a>
+                </li>
+                <li class="nav-item">
+                    <a th:classappend="${currentFilter == 'REJECTED'} ? 'active' : ''" class="nav-link" href="/applications?status=REJECTED">Reddedilen</a>
+                </li>
+                <li class="nav-item">
+                    <a th:classappend="${currentFilter == 'CANCELLED'} ? 'active' : ''" class="nav-link" href="/applications?status=CANCELLED">İptal</a>
+                </li>
+            </ul>
+
+            <div class="bank-card">
+                <table class="bank-table">
+                    <thead>
+                        <tr>
+                            <th>Başvuru No</th>
+                            <th>Müşteri</th>
+                            <th>Tutar</th>
+                            <th>Durum</th>
+                            <th>Risk Skoru</th>
+                            <th>Tarih</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="app : ${applications}">
+                            <td th:text="${app.applicationId}">APP-2026-001</td>
+                            <td th:text="${app.customerName}">Ahmet Yılmaz</td>
+                            <td th:text="|${#numbers.formatDecimal(app.loanAmount, 0, 'COMMA', 2, 'POINT')} TL|">50,000.00 TL</td>
+                            <td>
+                                <span class="bank-badge" th:classappend="'bank-badge-' + ${app.status}" th:text="${app.status}">SUBMITTED</span>
+                            </td>
+                            <td th:text="${app.riskScore != null ? app.riskScore : '-'}">-</td>
+                            <td th:text="${#temporals.format(app.createdAt, 'dd/MM/yyyy HH:mm')}">17/01/2026 15:30</td>
+                            <td>
+                                <a th:href="@{'/applications/' + ${app.applicationId}}" class="bank-link">Detay</a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(applications)}">
+                            <td colspan="7" class="bank-empty">Henüz başvuru bulunmuyor.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="mt-3">
+                <a href="/dashboard" class="bank-link me-3">Dashboard</a>
+                <a href="/tasks" class="bank-link">Görevlerim</a>
+            </p>
+        </div>
+    </main>
+
+    <th:block th:replace="~{fragments/layout :: footer}"></th:block>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

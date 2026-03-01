@@ -1,0 +1,8 @@
+# Tek seferlik Camunda şema oluşturma profili.
+# Kullanım: Tüm ACT_* tablolarını sildikten sonra bir kez:
+#   mvnw.cmd spring-boot:run -Dspring-boot.run.profiles=init-camunda
+# Sonraki başlatmalarda bu profili kullanmayın (varsayılan schema-update: false).
+camunda:
+  bpm:
+    database:
+      schema-update: true

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="escalation-rules-definitions" name="Escalation Rules Decision" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.0.0">
+  <decision id="escalation-rules-decision" name="Escalation Rules Decision">
+    <decisionTable id="decisionTable" hitPolicy="FIRST">
+      <input id="input1" label="Approver Level" camunda:inputVariable="approverLevel">
+        <inputExpression id="inputExpression1" typeRef="string">
+          <text>approverLevel</text>
+        </inputExpression>
+      </input>
+      <input id="input2" label="Hours Passed" camunda:inputVariable="hoursPassed">
+        <inputExpression id="inputExpression2" typeRef="integer">
+          <text>hoursPassed</text>
+        </inputExpression>
+      </input>
+      <input id="input3" label="Current Priority" camunda:inputVariable="currentPriority">
+        <inputExpression id="inputExpression3" typeRef="string">
+          <text>currentPriority</text>
+        </inputExpression>
+      </input>
+
+      <output id="output1" label="Escalate To" name="escalateTo" typeRef="string" />
+      <output id="output2" label="Notification Type" name="notificationType" typeRef="string" />
+
+      <!-- Rule 1: Manager - 24 hours passed -->
+      <rule id="rule1">
+        <inputEntry id="inputEntry1_1">
+          <text>"MANAGER"</text>
+        </inputEntry>
+        <inputEntry id="inputEntry1_2">
+          <text>&gt;= 24</text>
+        </inputEntry>
+        <inputEntry id="inputEntry1_3">
+          <text>"NORMAL"</text>
+        </inputEntry>
+        <outputEntry id="outputEntry1_1">
+          <text>"SENIOR"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry1_2">
+          <text>"EMAIL"</text>
+        </outputEntry>
+      </rule>
+
+      <!-- Rule 2: Manager - 36 hours passed (urgent) -->
+      <rule id="rule2">
+        <inputEntry id="inputEntry2_1">
+          <text>"MANAGER"</text>
+        </inputEntry>
+        <inputEntry id="inputEntry2_2">
+          <text>&gt;= 36</text>
+        </inputEntry>
+        <inputEntry id="inputEntry2_3">
+          <text>"NORMAL"</text>
+        </inputEntry>
+        <outputEntry id="outputEntry2_1">
+          <text>"SENIOR"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry2_2">
+          <text>"EMAIL_SMS"</text>
+        </outputEntry>
+      </rule>
+
+      <!-- Rule 3: Senior - 48 hours passed -->
+      <rule id="rule3">
+        <inputEntry id="inputEntry3_1">
+          <text>"SENIOR"</text>
+        </inputEntry>
+        <inputEntry id="inputEntry3_2">
+          <text>&gt;= 48</text>
+        </inputEntry>
+        <inputEntry id="inputEntry3_3">
+          <text>"NORMAL"</text>
+        </inputEntry>
+        <outputEntry id="outputEntry3_1">
+          <text>"DIRECTOR"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry3_2">
+          <text>"EMAIL"</text>
+        </outputEntry>
+      </rule>
+
+      <!-- Rule 4: Senior - 60 hours passed (critical) -->
+      <rule id="rule4">
+        <inputEntry id="inputEntry4_1">
+          <text>"SENIOR"</text>
+        </inputEntry>
+        <inputEntry id="inputEntry4_2">
+          <text>&gt;= 60</text>
+        </inputEntry>
+        <inputEntry id="inputEntry4_3">
+          <text>"NORMAL"</text>
+        </inputEntry>
+        <outputEntry id="outputEntry4_1">
+          <text>"DIRECTOR"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry4_2">
+          <text>"EMAIL_SMS_CALL"</text>
+        </outputEntry>
+      </rule>
+
+      <!-- Rule 5: Director - 72 hours passed -->
+      <rule id="rule5">
+        <inputEntry id="inputEntry5_1">
+          <text>"DIRECTOR"</text>
+        </inputEntry>
+        <inputEntry id="inputEntry5_2">
+          <text>&gt;= 72</text>
+        </inputEntry>
+        <inputEntry id="inputEntry5_3">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="outputEntry5_1">
+          <text>"BOARD"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry5_2">
+          <text>"EMAIL_CALL"</text>
+        </outputEntry>
+      </rule>
+
+      <!-- Rule 6: Auto-reject after 120 hours (5 days) -->
+      <rule id="rule6">
+        <inputEntry id="inputEntry6_1">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="inputEntry6_2">
+          <text>&gt;= 120</text>
+        </inputEntry>
+        <inputEntry id="inputEntry6_3">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="outputEntry6_1">
+          <text>"AUTO_REJECT"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry6_2">
+          <text>"EMAIL_SMS_AUDIT"</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+</definitions>

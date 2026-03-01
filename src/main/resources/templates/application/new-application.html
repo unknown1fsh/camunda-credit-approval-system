@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Yeni Kredi Başvurusu')}"></th:block>
+</head>
+
+<body>
+    <th:block th:replace="~{fragments/layout :: header}"></th:block>
+
+    <main class="bank-main">
+        <div class="bank-container">
+            <div th:if="${error}" class="bank-alert bank-alert-danger">
+                <strong>Hata:</strong> <span th:text="${error}">Bir hata oluştu.</span>
+            </div>
+
+            <h1 class="bank-page-title"><i class="bi bi-file-earmark-plus me-2"></i>Yeni Kredi Başvurusu</h1>
+            <p class="text-muted mb-4">Kredi başvurunuz otomatik risk skorlaması ve onay süreci ile değerlendirilir. Tüm
+                adımları tamamlayıp başvuruyu gönderin.</p>
+
+            <!-- Stepper -->
+            <nav class="bank-stepper" aria-label="Başvuru adımları">
+                <div class="bank-stepper-item active" id="stepper-1" data-step="1">
+                    <span class="bank-stepper-circle">1</span>
+                    <span class="bank-stepper-label">Müşteri Bilgileri</span>
+                </div>
+                <div class="bank-stepper-line"></div>
+                <div class="bank-stepper-item" id="stepper-2" data-step="2">
+                    <span class="bank-stepper-circle">2</span>
+                    <span class="bank-stepper-label">Kredi Bilgileri</span>
+                </div>
+                <div class="bank-stepper-line"></div>
+                <div class="bank-stepper-item" id="stepper-3" data-step="3">
+                    <span class="bank-stepper-circle">3</span>
+                    <span class="bank-stepper-label">İş ve Ek Bilgileri</span>
+                </div>
+            </nav>
+
+            <form th:action="@{/applications/submit}" th:object="${application}" method="post" class="bank-card"
+                id="applicationForm">
+                <div th:if="${#fields.hasErrors('*')}" class="bank-alert bank-alert-warning">
+                    <strong>Lütfen hataları düzeltin.</strong> Eksik veya hatalı alanları kontrol edip tekrar deneyin.
+                </div>
+                <input type="hidden" name="_step" id="formStep" value="1">
+
+                <!-- Adım 1: Müşteri Bilgileri -->
+                <div class="bank-step-panel active" id="panel-1" data-step="1">
+                    <h3 class="bank-section-title">Adım 1: Müşteri Bilgileri</h3>
+                    <div class="bank-info-box mb-4">
+                        <p class="mb-0 small text-muted"><i class="bi bi-info-circle me-1"></i> Kimlik ve iletişim
+                            bilgileriniz başvuru takibi için kullanılır. TC Kimlik No 11 haneli olmalıdır.</p>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="bank-form-group"
+                                th:classappend="${#fields.hasErrors('customerId')} ? 'has-error' : ''">
+                                <label for="customerId">Müşteri ID <span class="text-danger">*</span></label>
+                                <input type="text" name="customerId" th:value="*{customerId}" th:field="*{customerId}"
+                                    id="customerId" required placeholder="Örn: CUST001">
+                                <p th:if="${#fields.hasErrors('customerId')}" th:errors="*{customerId}"
+                                    class="bank-error"></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="bank-form-group"
+                                th:classappend="${#fields.hasErrors('customerName')} ? 'has-error' : ''">
+                                <label for="customerName">Ad Soyad <span class="text-danger">*</span></label>
+                                <input type="text" name="customerName" th:value="*{customerName}"
+                                    th:field="*{customerName}" id="customerName" required
+                                    placeholder="Örn: Ahmet Yılmaz">
+                                <p th:if="${#fields.hasErrors('customerName')}" th:errors="*{customerName}"
+                                    class="bank-error"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="bank-form-group"
+                                th:classappend="${#fields.hasErrors('nationalId')} ? 'has-error' : ''">
+                                <label for="nationalId">TC Kimlik No (11 hane) <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" name="nationalId" th:value="*{nationalId}" th:field="*{nationalId}"
+                                    id="nationalId" required maxlength="11" pattern="[0-9]{11}"
+                                    placeholder="12345678901" inputmode="numeric" autocomplete="off">
+                                <p class="bank-help-text">Sadece rakam girin, 11 hane.</p>
+                                <p th:if="${#fields.hasErrors('nationalId')}" th:errors="*{nationalId}"
+                                    class="bank-error"></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="bank-form-group"
+                                th:classappend="${#fields.hasErrors('age')} ? 'has-error' : ''">
+                                <label for="age">Yaş (18–80) <span class="text-danger">*</span></label>
+                                <input type="number" name="age" th:value="*{age}" th:field="*{age}" id="age" required
+                                    min="18" max="80" placeholder="35">
+                                <p th:if="${#fields.hasErrors('age')}" th:errors="*{age}" class="bank-error"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="bank-form-group"
+                                th:classappend="${#fields.hasErrors('email')} ? 'has-error' : ''">
+                                <label for="email">E-posta <span class="text-danger">*</span></label>
+                                <input type="email" name="email" th:value="*{email}" th:field="*{email}" id="email"
+                                    required placeholder="ornek@email.com">
+                                <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="bank-error"></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="bank-form-group"
+                                th:classappend="${#fields.hasErrors('phone')} ? 'has-error' : ''">
+                                <label for="phone">Telefon <span class="text-danger">*</span></label>
+                                <input type="tel" name="phone" th:value="*{phone}" th:field="*{phone}" id="phone"
+                                    required placeholder="5XX XXX XX XX">
+                                <p th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="bank-error"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bank-form-actions">
+                        <button type="button" class="bank-btn bank-btn-primary" id="btnNext1">İleri: Kredi
+                            Bilgileri</button>
+                    </div>
+                </div>
+
+                <!-- Adım 2: Kredi Bilgileri -->
+                <div class="bank-step-panel" id="panel-2" data-step="2">
+                    <h3 class="bank-section-title">Adım 2: Kredi Bilgileri</h3>
+                    <div class="bank-info-box mb-4">
+                        <p class="mb-0 small text-muted"><i class="bi bi-info-circle me-1"></i> Kredi tutarı 5.000 –
+                            1.000.000 TL arasında olabilir. Vade 6–120 ay seçilebilir.</p>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="bank-form-group"
+                                th:classappend="${#fields.hasErrors('loanAmount')} ? 'has-error' : ''">
+                                <label for="loanAmount">Kredi Tutarı (TL) <span class="text-danger">*</span></label>
+                                <input type="number" name="loanAmount" th:value="*{loanAmount}" th:field="*{loanAmount}"
+                                    id="loanAmount" required min="5000" max="1000000" step="1000" placeholder="50000">
+                                <p class="bank-help-text">Min. 5.000 TL, max. 1.000.000 TL</p>
+                                <p th:if="${#fields.hasErrors('loanAmount')}" th:errors="*{loanAmount}"
+                                    class="bank-error"></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="bank-form-group"
+                                th:classappend="${#fields.hasErrors('termMonths')} ? 'has-error' : ''">
+                                <label for="termMonths">Vade (Ay) <span class="text-danger">*</span></label>
+                                <input type="number" name="termMonths" th:value="*{termMonths}" th:field="*{termMonths}"
+                                    id="termMonths" required min="6" max="120" placeholder="12">
+                                <p class="bank-help-text">Tahmini aylık taksit: <strong
+                                        id="installmentPreview">–</strong> TL</p>
+                                <p th:if="${#fields.hasErrors('termMonths')}" th:errors="*{termMonths}"
+                                    class="bank-error"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bank-form-actions">
+                        <button type="button" class="bank-btn bank-btn-outline" id="btnBack2">Geri</button>
+                        <button type="button" class="bank-btn bank-btn-primary" id="btnNext2">İleri: İş
+                            Bilgileri</button>
+                    </div>
+                </div>
+
+                <!-- Adım 3: İş ve Ek Bilgileri -->
+                <div class="bank-step-panel" id="panel-3" data-step="3">
+                    <h3 class="bank-section-title">Adım 3: İş ve Ek Bilgileri</h3>
+                    <div class="bank-info-box mb-4">
+                        <p class="mb-0 small text-muted"><i class="bi bi-info-circle me-1"></i> Bu bilgiler risk
+                            skorlaması ve onay yetkisi belirleme için kullanılır.</p>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="bank-form-group"
+                                th:classappend="${#fields.hasErrors('employmentStatus')} ? 'has-error' : ''">
+                                <label for="employmentStatus">İstihdam Durumu <span class="text-danger">*</span></label>
+                                <select name="employmentStatus" id="employmentStatus" required
+                                    th:field="*{employmentStatus}">
+                                    <option value="">Seçiniz</option>
+                                    <option value="PERMANENT">Sürekli Çalışan</option>
+                                    <option value="TEMPORARY">Geçici Çalışan</option>
+                                    <option value="SELF_EMPLOYED">Serbest Meslek</option>
+                                    <option value="UNEMPLOYED">İşsiz</option>
+                                </select>
+                                <p th:if="${#fields.hasErrors('employmentStatus')}" th:errors="*{employmentStatus}"
+                                    class="bank-error"></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="bank-form-group"
+                                th:classappend="${#fields.hasErrors('monthlyIncome')} ? 'has-error' : ''">
+                                <label for="monthlyIncome">Aylık Gelir (TL)</label>
+                                <input type="number" name="monthlyIncome" th:value="*{monthlyIncome}" id="monthlyIncome"
+                                    min="0" step="100" placeholder="15000">
+                                <p class="bank-help-text" id="helpMonthlyIncome">Aylık brüt gelirinizi girin.</p>
+                                <p th:if="${#fields.hasErrors('monthlyIncome')}" th:errors="*{monthlyIncome}"
+                                    class="bank-error"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="bank-form-group">
+                                <label for="employer">İşveren</label>
+                                <input type="text" name="employer" th:value="*{employer}" id="employer"
+                                    placeholder="ABC Şirketi">
+                                <p class="bank-help-text" id="helpEmployer">Çalıştığınız kurum veya kendi işiniz.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="bank-form-group">
+                                <label for="customerSegment">Müşteri Segmenti</label>
+                                <select name="customerSegment" id="customerSegment" th:field="*{customerSegment}">
+                                    <option value="BRONZE">Bronze</option>
+                                    <option value="SILVER">Silver</option>
+                                    <option value="GOLD">Gold</option>
+                                    <option value="PREMIUM">Premium</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="bank-form-group">
+                                <label for="creditHistory">Kredi Geçmişi (1–5)</label>
+                                <input type="number" name="creditHistory" th:value="*{creditHistory}" id="creditHistory"
+                                    min="1" max="5" placeholder="3">
+                                <p class="bank-help-text">1: zayıf, 5: çok iyi</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="bank-form-group">
+                                <label for="existingLoans">Mevcut Kredi Sayısı</label>
+                                <input type="number" name="existingLoans" th:value="*{existingLoans}" id="existingLoans"
+                                    min="0" placeholder="0">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bank-form-actions">
+                        <button type="button" class="bank-btn bank-btn-outline" id="btnBack3">Geri</button>
+                        <button type="submit" class="bank-btn bank-btn-primary"><i class="bi bi-send me-1"></i>Başvuruyu
+                            Gönder</button>
+                    </div>
+                </div>
+            </form>
+
+            <p class="mt-3"><a th:href="@{/applications}" class="bank-link">Tüm Başvurulara Dön</a></p>
+        </div>
+    </main>
+
+    <th:block th:replace="~{fragments/layout :: footer}"></th:block>
+    <script th:src="@{/js/application-stepper.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

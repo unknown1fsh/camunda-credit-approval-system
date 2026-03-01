@@ -1,0 +1,752 @@
+/* Kredi Onay Sistemi - Profesyonel Banka Temasi */
+
+:root {
+    --bank-primary: #0a2540;
+    --bank-secondary: #1e3a5f;
+    --bank-success: #0d5c2e;
+    --bank-gold: #c9a227;
+    --bank-danger: #b91c1c;
+    --bank-warning: #b45309;
+    --bank-bg: #f8f9fa;
+    --bank-text: #495057;
+    --bank-text-muted: #6c757d;
+    --bank-border: #dee2e6;
+    --bank-card-shadow: 0 1px 3px rgba(10, 37, 64, 0.08);
+    --bank-card-shadow-hover: 0 4px 12px rgba(10, 37, 64, 0.12);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bank-bg);
+    color: var(--bank-text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.bank-header {
+    background: linear-gradient(135deg, var(--bank-primary) 0%, var(--bank-secondary) 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(10, 37, 64, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.bank-header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.bank-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+.bank-logo:hover {
+    color: var(--bank-gold);
+}
+
+.bank-logo i {
+    font-size: 1.75rem;
+}
+
+.bank-nav {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.bank-nav-link {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.bank-nav-link:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.bank-user {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.bank-logout {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    margin-left: 0.5rem;
+    padding-left: 0.5rem;
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.bank-logout:hover {
+    color: white;
+}
+
+/* Main content */
+.bank-main {
+    flex: 1;
+    padding: 2rem 1.5rem;
+}
+
+.bank-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Footer */
+.bank-footer {
+    background: var(--bank-primary);
+    color: rgba(255, 255, 255, 0.8);
+    padding: 1rem 1.5rem;
+    font-size: 0.85rem;
+}
+
+.bank-footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.bank-footer-divider {
+    margin: 0 0.75rem;
+    opacity: 0.5;
+}
+
+/* Page titles */
+.bank-page-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--bank-primary);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--bank-gold);
+}
+
+.bank-section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--bank-secondary);
+    margin-bottom: 1rem;
+}
+
+/* Cards */
+.bank-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: var(--bank-card-shadow);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--bank-border);
+}
+
+.bank-card:hover {
+    box-shadow: var(--bank-card-shadow-hover);
+}
+
+.bank-dashboard-card {
+    height: 100%;
+    border: none;
+    border-radius: 8px;
+    box-shadow: var(--bank-card-shadow);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.bank-dashboard-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--bank-card-shadow-hover);
+}
+
+.bank-dashboard-card .card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.bank-dashboard-card .card-icon.applications {
+    background: #e8f4fd;
+    color: var(--bank-secondary);
+}
+
+.bank-dashboard-card .card-icon.camunda {
+    background: #fff8e6;
+    color: var(--bank-warning);
+}
+
+.bank-dashboard-card .card-icon.dev {
+    background: #e6f4ea;
+    color: var(--bank-success);
+}
+
+/* Tables */
+.bank-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--bank-card-shadow);
+}
+
+.bank-table th,
+.bank-table td {
+    padding: 0.875rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--bank-border);
+}
+
+.bank-table th {
+    background: var(--bank-primary);
+    color: white;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.bank-table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.bank-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Buttons */
+.bank-btn {
+    display: inline-block;
+    padding: 0.5rem 1.25rem;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.bank-btn-primary {
+    background: var(--bank-secondary);
+    color: white;
+}
+
+.bank-btn-primary:hover {
+    background: var(--bank-primary);
+    color: white;
+}
+
+.bank-btn-success {
+    background: var(--bank-success);
+    color: white;
+}
+
+.bank-btn-success:hover {
+    background: #0a4a24;
+    color: white;
+}
+
+.bank-btn-danger {
+    background: var(--bank-danger);
+    color: white;
+}
+
+.bank-btn-danger:hover {
+    background: #991b1b;
+    color: white;
+}
+
+.bank-btn-outline {
+    background: transparent;
+    color: var(--bank-secondary);
+    border: 1px solid var(--bank-secondary);
+}
+
+.bank-btn-outline:hover {
+    background: var(--bank-secondary);
+    color: white;
+}
+
+.bank-btn-gold {
+    background: var(--bank-gold);
+    color: var(--bank-primary);
+}
+
+.bank-btn-gold:hover {
+    background: #b8921f;
+    color: var(--bank-primary);
+}
+
+/* Badges / Status */
+.bank-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.bank-badge-SUBMITTED,
+.status-SUBMITTED {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.bank-badge-APPROVED,
+.status-APPROVED {
+    background: #d1fae5;
+    color: var(--bank-success);
+}
+
+.bank-badge-REJECTED,
+.status-REJECTED {
+    background: #fee2e2;
+    color: var(--bank-danger);
+}
+
+.bank-badge-UNDER_REVIEW,
+.status-UNDER_REVIEW {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.bank-badge-AWAITING_APPROVAL,
+.status-AWAITING_APPROVAL {
+    background: #e9d5ff;
+    color: #6b21a8;
+}
+
+.bank-badge-DOCUMENT_PENDING,
+.status-DOCUMENT_PENDING {
+    background: #ffedd5;
+    color: #c2410c;
+}
+
+.bank-badge-CANCELLED,
+.status-CANCELLED {
+    background: #e5e7eb;
+    color: #4b5563;
+}
+
+.bank-badge-DRAFT,
+.status-DRAFT {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+/* Forms */
+.bank-form-group {
+    margin-bottom: 1.25rem;
+}
+
+.bank-form-group label {
+    display: block;
+    margin-bottom: 0.375rem;
+    font-weight: 500;
+    color: var(--bank-text);
+}
+
+.bank-form-group input,
+.bank-form-group select,
+.bank-form-group textarea {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--bank-border);
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.bank-form-group input:focus,
+.bank-form-group select:focus,
+.bank-form-group textarea:focus {
+    outline: none;
+    border-color: var(--bank-secondary);
+    box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.15);
+}
+
+.bank-form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Detail rows */
+.bank-detail-row {
+    display: flex;
+    padding: 0.75rem 0;
+    border-bottom: 1px dashed var(--bank-border);
+}
+
+.bank-detail-row:last-child {
+    border-bottom: none;
+}
+
+.bank-detail-label {
+    flex: 0 0 180px;
+    font-weight: 500;
+    color: var(--bank-text-muted);
+}
+
+.bank-detail-value {
+    flex: 1;
+    color: var(--bank-text);
+}
+
+/* Alerts */
+.bank-alert {
+    padding: 1rem 1.25rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+}
+
+.bank-alert-success {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.bank-alert-danger {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.bank-alert-warning {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+}
+
+/* Info box */
+.bank-info-box {
+    background: #f8fafc;
+    border: 1px solid var(--bank-border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.bank-info-box h3 {
+    font-size: 1rem;
+    color: var(--bank-primary);
+    margin-bottom: 1rem;
+}
+
+/* Links */
+.bank-link {
+    color: var(--bank-secondary);
+    text-decoration: none;
+}
+
+.bank-link:hover {
+    color: var(--bank-primary);
+    text-decoration: underline;
+}
+
+/* Empty state */
+.bank-empty {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--bank-text-muted);
+}
+
+/* Login page specific */
+.bank-login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--bank-primary) 0%, var(--bank-secondary) 50%, #2d4a6f 100%);
+}
+
+.bank-login-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(10, 37, 64, 0.3);
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 400px;
+}
+
+.bank-login-logo {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.bank-login-logo i {
+    font-size: 3rem;
+    color: var(--bank-secondary);
+}
+
+.bank-login-logo h2 {
+    margin-top: 0.75rem;
+    color: var(--bank-primary);
+    font-size: 1.5rem;
+}
+
+.bank-login-logo p {
+    color: var(--bank-text-muted);
+    font-size: 0.9rem;
+}
+
+.bank-login-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--bank-secondary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.bank-login-btn:hover {
+    background: var(--bank-primary);
+    color: white;
+}
+
+/* Stepper (application form steps) */
+.bank-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding: 0 0.5rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.bank-stepper-item {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+}
+
+.bank-stepper-item:last-child .bank-stepper-line {
+    display: none;
+}
+
+.bank-stepper-circle {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: var(--bank-border);
+    color: var(--bank-text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+    transition: background 0.2s, color 0.2s;
+}
+
+.bank-stepper-item.active .bank-stepper-circle {
+    background: var(--bank-secondary);
+    color: white;
+}
+
+.bank-stepper-item.done .bank-stepper-circle {
+    background: var(--bank-success);
+    color: white;
+}
+
+.bank-stepper-item.done .bank-stepper-circle::after {
+    content: '\2713';
+}
+
+.bank-stepper-item.done .bank-stepper-circle {
+    font-size: 1rem;
+}
+
+.bank-stepper-label {
+    margin-left: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--bank-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bank-stepper-item.active .bank-stepper-label {
+    color: var(--bank-primary);
+}
+
+.bank-stepper-item.done .bank-stepper-label {
+    color: var(--bank-text);
+}
+
+.bank-stepper-line {
+    flex: 1;
+    height: 2px;
+    background: var(--bank-border);
+    margin: 0 0.5rem;
+    min-width: 1rem;
+}
+
+.bank-stepper-item.done .bank-stepper-line {
+    background: var(--bank-success);
+}
+
+.bank-step-panel {
+    display: none;
+}
+
+.bank-step-panel.active {
+    display: block;
+}
+
+.bank-form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.bank-help-text {
+    font-size: 0.8rem;
+    color: var(--bank-text-muted);
+    margin-top: 0.25rem;
+}
+
+.bank-form-group.has-error input,
+.bank-form-group.has-error select,
+.bank-form-group.has-error textarea {
+    border-color: var(--bank-danger);
+}
+
+.bank-form-group .bank-error {
+    font-size: 0.8rem;
+    color: var(--bank-danger);
+    margin-top: 0.25rem;
+}
+
+/* Process steps (approval / detail pages) */
+.bank-process-steps {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.bank-process-step {
+    flex: 1;
+    min-width: 80px;
+    max-width: 140px;
+    text-align: center;
+}
+
+.bank-process-step-num {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--bank-border);
+    color: var(--bank-text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin: 0 auto 0.5rem;
+}
+
+.bank-process-step.done .bank-process-step-num {
+    background: var(--bank-success);
+    color: white;
+}
+
+.bank-process-step.current .bank-process-step-num {
+    background: var(--bank-secondary);
+    color: white;
+    box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.25);
+}
+
+.bank-process-step-label {
+    font-size: 0.75rem;
+    color: var(--bank-text-muted);
+    line-height: 1.2;
+}
+
+.bank-process-step.current .bank-process-step-label {
+    color: var(--bank-primary);
+    font-weight: 600;
+}
+
+.bank-process-step.done .bank-process-step-label {
+    color: var(--bank-text);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .bank-header-inner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .bank-nav {
+        width: 100%;
+    }
+
+    .bank-main {
+        padding: 1rem;
+    }
+
+    .bank-detail-row {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .bank-detail-label {
+        flex: none;
+    }
+
+    .bank-stepper-label {
+        display: none;
+    }
+
+    .bank-stepper-item {
+        flex: none;
+    }
+
+    .bank-stepper-line {
+        flex: 1;
+        min-width: 0.5rem;
+    }
+
+    .bank-process-steps {
+        justify-content: center;
+    }
+
+    .bank-process-step {
+        min-width: 70px;
+    }
+}

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="document-requirements-definitions" name="Document Requirements Decision" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.0.0">
+  <decision id="document-requirements-decision" name="Document Requirements Decision">
+    <decisionTable id="decisionTable" hitPolicy="COLLECT" aggregation="SUM">
+      <input id="input1" label="Loan Amount" camunda:inputVariable="loanAmount">
+        <inputExpression id="inputExpression1" typeRef="double">
+          <text>loanAmount</text>
+        </inputExpression>
+      </input>
+      <input id="input2" label="Risk Category" camunda:inputVariable="riskCategory">
+        <inputExpression id="inputExpression2" typeRef="string">
+          <text>riskCategory</text>
+        </inputExpression>
+      </input>
+      <input id="input3" label="Employment Status" camunda:inputVariable="employmentStatus">
+        <inputExpression id="inputExpression3" typeRef="string">
+          <text>employmentStatus</text>
+        </inputExpression>
+      </input>
+
+      <output id="output1" label="Required Documents" name="requiredDocuments" typeRef="string" />
+
+      <!-- Rule 1: Basic documents for small loans -->
+      <rule id="rule1">
+        <inputEntry id="inputEntry1_1">
+          <text>&lt; 50000</text>
+        </inputEntry>
+        <inputEntry id="inputEntry1_2">
+          <text>"LOW"</text>
+        </inputEntry>
+        <inputEntry id="inputEntry1_3">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="outputEntry1_1">
+          <text>"ID,INCOME_PROOF,BANK_STATEMENT_3M"</text>
+        </outputEntry>
+      </rule>
+
+      <!-- Rule 2: Permanent employment, medium loan -->
+      <rule id="rule2">
+        <inputEntry id="inputEntry2_1">
+          <text>&lt; 100000</text>
+        </inputEntry>
+        <inputEntry id="inputEntry2_2">
+          <text>"LOW","MEDIUM"</text>
+        </inputEntry>
+        <inputEntry id="inputEntry2_3">
+          <text>"PERMANENT"</text>
+        </inputEntry>
+        <outputEntry id="outputEntry2_1">
+          <text>"ID,INCOME_PROOF,BANK_STATEMENT_6M,EMPLOYMENT_LETTER"</text>
+        </outputEntry>
+      </rule>
+
+      <!-- Rule 3: Self-employed, medium loan -->
+      <rule id="rule3">
+        <inputEntry id="inputEntry3_1">
+          <text>&lt; 100000</text>
+        </inputEntry>
+        <inputEntry id="inputEntry3_2">
+          <text>"LOW","MEDIUM"</text>
+        </inputEntry>
+        <inputEntry id="inputEntry3_3">
+          <text>"SELF_EMPLOYED"</text>
+        </inputEntry>
+        <outputEntry id="outputEntry3_1">
+          <text>"ID,TAX_RETURN_2Y,BANK_STATEMENT_12M,BUSINESS_LICENSE"</text>
+        </outputEntry>
+      </rule>
+
+      <!-- Rule 4: High loan, permanent -->
+      <rule id="rule4">
+        <inputEntry id="inputEntry4_1">
+          <text>&gt;= 100000</text>
+        </inputEntry>
+        <inputEntry id="inputEntry4_2">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="inputEntry4_3">
+          <text>"PERMANENT"</text>
+        </inputEntry>
+        <outputEntry id="outputEntry4_1">
+          <text>"ID,INCOME_PROOF,BANK_STATEMENT_12M,EMPLOYMENT_LETTER,COLLATERAL"</text>
+        </outputEntry>
+      </rule>
+
+      <!-- Rule 5: High loan, self-employed -->
+      <rule id="rule5">
+        <inputEntry id="inputEntry5_1">
+          <text>&gt;= 100000</text>
+        </inputEntry>
+        <inputEntry id="inputEntry5_2">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="inputEntry5_3">
+          <text>"SELF_EMPLOYED"</text>
+        </inputEntry>
+        <outputEntry id="outputEntry5_1">
+          <text>"ID,TAX_RETURN_2Y,BANK_STATEMENT_12M,BUSINESS_LICENSE,FINANCIAL_STATEMENT,COLLATERAL"</text>
+        </outputEntry>
+      </rule>
+
+      <!-- Rule 6: High risk requires additional documents -->
+      <rule id="rule6">
+        <inputEntry id="inputEntry6_1">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="inputEntry6_2">
+          <text>"HIGH","CRITICAL"</text>
+        </inputEntry>
+        <inputEntry id="inputEntry6_3">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="outputEntry6_1">
+          <text>"GUARANTOR_INFO,ADDITIONAL_COLLATERAL"</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+</definitions>

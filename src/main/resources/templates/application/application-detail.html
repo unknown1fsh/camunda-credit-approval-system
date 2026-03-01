@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Başvuru Detayı')}"></th:block>
+</head>
+<body>
+    <th:block th:replace="~{fragments/layout :: header}"></th:block>
+
+    <main class="bank-main">
+        <div class="bank-container">
+            <div th:if="${param.success}" class="bank-alert bank-alert-success">
+                Başvurunuz alındı ve değerlendirme süreci başlatıldı. Takip no: <strong th:text="${app.applicationId}">APP-ID</strong>. <a th:href="@{'/applications/' + ${app.applicationId}}">Başvuru detayına git</a>
+            </div>
+
+            <h1 class="bank-page-title"><i class="bi bi-file-earmark-text me-2"></i>Başvuru Detayı: <span th:text="${app.applicationId}">APP-ID</span></h1>
+
+            <!-- Süreç adımları: tüm adımları görme -->
+            <div class="bank-card mb-4">
+                <h3 class="bank-section-title">Süreç Durumu</h3>
+                <div class="bank-process-steps">
+                    <div class="bank-process-step done">
+                        <div class="bank-process-step-num"><i class="bi bi-check"></i></div>
+                        <div class="bank-process-step-label">Başvuru alındı</div>
+                    </div>
+                    <div class="bank-process-step" th:classappend="${app.status != null and app.status.name() != 'DRAFT'} ? 'done' : (${app.status != null and app.status.name() == 'SUBMITTED'} ? 'current' : '')">
+                        <div class="bank-process-step-num">2</div>
+                        <div class="bank-process-step-label">Doğrulama &amp; risk skoru</div>
+                    </div>
+                    <div class="bank-process-step" th:classappend="${app.status != null and (app.status.name() == 'UNDER_REVIEW' or app.status.name() == 'AWAITING_APPROVAL' or app.status.name() == 'APPROVED' or app.status.name() == 'REJECTED' or app.status.name() == 'DOCUMENT_PENDING')} ? 'done' : ''">
+                        <div class="bank-process-step-num">3</div>
+                        <div class="bank-process-step-label">Onay yetkisi belirlendi</div>
+                    </div>
+                    <div class="bank-process-step" th:classappend="${app.status != null and (app.status.name() == 'AWAITING_APPROVAL' or app.status.name() == 'UNDER_REVIEW' or app.status.name() == 'DOCUMENT_PENDING')} ? 'current' : (${app.status != null and (app.status.name() == 'APPROVED' or app.status.name() == 'REJECTED')} ? 'done' : '')">
+                        <div class="bank-process-step-num">4</div>
+                        <div class="bank-process-step-label">Yönetici onayı</div>
+                    </div>
+                    <div class="bank-process-step" th:classappend="${app.status != null and (app.status.name() == 'APPROVED' or app.status.name() == 'REJECTED')} ? 'done current' : ''">
+                        <div class="bank-process-step-num">5</div>
+                        <div class="bank-process-step-label">
+                            Sonuç
+                            <th:block th:if="${app.status != null and app.status.name() == 'APPROVED'}">
+                                <br><strong class="text-success">Onaylandı</strong>
+                            </th:block>
+                            <th:block th:if="${app.status != null and app.status.name() == 'REJECTED'}">
+                                <br><strong class="text-danger">Reddedildi</strong>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bank-card">
+                <h3 class="bank-section-title">Genel Bilgiler</h3>
+                <div class="bank-detail-row">
+                    <div class="bank-detail-label">Müşteri</div>
+                    <div class="bank-detail-value" th:text="${app.customerName}">Ahmet Yılmaz</div>
+                </div>
+                <div class="bank-detail-row">
+                    <div class="bank-detail-label">Durum</div>
+                    <div class="bank-detail-value">
+                        <span th:if="${app.status != null}" class="bank-badge" th:classappend="'bank-badge-' + ${app.status}" th:text="${app.status}">SUBMITTED</span>
+                        <span th:if="${app.status == null}" th:text="'-'">-</span>
+                    </div>
+                </div>
+                <div class="bank-detail-row">
+                    <div class="bank-detail-label">Kredi Tutarı</div>
+                    <div class="bank-detail-value" th:text="${app.loanAmount != null ? #numbers.formatDecimal(app.loanAmount, 0, 'COMMA', 2, 'POINT') + ' TRY' : '-'}">50,000.00 TRY</div>
+                </div>
+                <div class="bank-detail-row">
+                    <div class="bank-detail-label">Vade</div>
+                    <div class="bank-detail-value" th:text="${app.termMonths != null ? app.termMonths + ' Ay' : '-'}">12 Ay</div>
+                </div>
+                <div class="bank-detail-row">
+                    <div class="bank-detail-label">Başvuru Tarihi</div>
+                    <div class="bank-detail-value" th:text="${app.createdAt != null ? #temporals.format(app.createdAt, 'dd-MM-yyyy HH:mm') : '-'}">18-01-2026 16:30</div>
+                </div>
+                <div class="bank-detail-row">
+                    <div class="bank-detail-label">Süreç ID</div>
+                    <div class="bank-detail-value"><code th:text="${app.processInstanceId}">p-id</code></div>
+                </div>
+                <div th:if="${app.riskScore != null}" class="bank-detail-row">
+                    <div class="bank-detail-label">Risk Skoru</div>
+                    <div class="bank-detail-value" th:text="${app.riskScore}">-</div>
+                </div>
+                <div th:if="${app.riskCategory != null}" class="bank-detail-row">
+                    <div class="bank-detail-label">Risk Kategorisi</div>
+                    <div class="bank-detail-value" th:text="${app.riskCategory}">LOW</div>
+                </div>
+                <div th:if="${app.approvedBy != null}" class="bank-detail-row">
+                    <div class="bank-detail-label">Onaylayan</div>
+                    <div class="bank-detail-value" th:text="${app.approvedBy}">-</div>
+                </div>
+                <div th:if="${app.approvedAt != null}" class="bank-detail-row">
+                    <div class="bank-detail-label">Onay Tarihi</div>
+                    <div class="bank-detail-value" th:text="${#temporals.format(app.approvedAt, 'dd-MM-yyyy HH:mm')}">-</div>
+                </div>
+                <div th:if="${app.rejectionReason != null}" class="bank-detail-row">
+                    <div class="bank-detail-label" style="color: var(--bank-danger);">Ret Nedeni</div>
+                    <div class="bank-detail-value" style="color: var(--bank-danger);" th:text="${app.rejectionReason}">-</div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a th:href="@{/applications}" class="bank-btn bank-btn-primary me-2">Tüm Başvurulara Dön</a>
+                <a th:href="@{/applications/new}" class="bank-link">Yeni Başvuru Yap</a>
+            </div>
+        </div>
+    </main>
+
+    <th:block th:replace="~{fragments/layout :: footer}"></th:block>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

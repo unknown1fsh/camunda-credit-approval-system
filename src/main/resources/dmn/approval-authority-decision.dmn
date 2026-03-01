@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="approval-authority-definitions" name="Approval Authority Decision" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.0.0">
+  <decision id="approval-authority-decision" name="Approval Authority Decision">
+    <decisionTable id="decisionTable" hitPolicy="FIRST">
+      <input id="input1" label="Loan Amount" camunda:inputVariable="loanAmount">
+        <inputExpression id="inputExpression1" typeRef="double">
+          <text>loanAmount</text>
+        </inputExpression>
+      </input>
+      <input id="input2" label="Risk Score" camunda:inputVariable="riskScore">
+        <inputExpression id="inputExpression2" typeRef="integer">
+          <text>riskScore</text>
+        </inputExpression>
+      </input>
+      <input id="input3" label="Customer Segment" camunda:inputVariable="customerSegment">
+        <inputExpression id="inputExpression3" typeRef="string">
+          <text>customerSegment</text>
+        </inputExpression>
+      </input>
+
+      <output id="output1" label="Approver Level" name="approverLevel" typeRef="string" />
+      <output id="output2" label="SLA Hours" name="slaHours" typeRef="integer" />
+
+      <!-- Rule 1: Small loans, low risk, premium customers - Manager -->
+      <rule id="rule1">
+        <inputEntry id="inputEntry1_1">
+          <text>&lt; 50000</text>
+        </inputEntry>
+        <inputEntry id="inputEntry1_2">
+          <text>&lt; 35</text>
+        </inputEntry>
+        <inputEntry id="inputEntry1_3">
+          <text>"PREMIUM","GOLD"</text>
+        </inputEntry>
+        <outputEntry id="outputEntry1_1">
+          <text>"MANAGER"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry1_2">
+          <text>24</text>
+        </outputEntry>
+      </rule>
+
+      <!-- Rule 2: Medium loans, medium risk - Manager -->
+      <rule id="rule2">
+        <inputEntry id="inputEntry2_1">
+          <text>&lt; 100000</text>
+        </inputEntry>
+        <inputEntry id="inputEntry2_2">
+          <text>&lt; 50</text>
+        </inputEntry>
+        <inputEntry id="inputEntry2_3">
+          <text>"PREMIUM","GOLD","SILVER"</text>
+        </inputEntry>
+        <outputEntry id="outputEntry2_1">
+          <text>"MANAGER"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry2_2">
+          <text>24</text>
+        </outputEntry>
+      </rule>
+
+      <!-- Rule 3: Medium-high loans, low-medium risk - Senior -->
+      <rule id="rule3">
+        <inputEntry id="inputEntry3_1">
+          <text>&lt; 200000</text>
+        </inputEntry>
+        <inputEntry id="inputEntry3_2">
+          <text>&lt; 50</text>
+        </inputEntry>
+        <inputEntry id="inputEntry3_3">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="outputEntry3_1">
+          <text>"SENIOR"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry3_2">
+          <text>48</text>
+        </outputEntry>
+      </rule>
+
+      <!-- Rule 4: High loans, medium risk, good customers - Senior -->
+      <rule id="rule4">
+        <inputEntry id="inputEntry4_1">
+          <text>&lt; 500000</text>
+        </inputEntry>
+        <inputEntry id="inputEntry4_2">
+          <text>&lt; 65</text>
+        </inputEntry>
+        <inputEntry id="inputEntry4_3">
+          <text>"PREMIUM","GOLD"</text>
+        </inputEntry>
+        <outputEntry id="outputEntry4_1">
+          <text>"SENIOR"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry4_2">
+          <text>48</text>
+        </outputEntry>
+      </rule>
+
+      <!-- Rule 5: Very high loans - Director -->
+      <rule id="rule5">
+        <inputEntry id="inputEntry5_1">
+          <text>&gt;= 500000</text>
+        </inputEntry>
+        <inputEntry id="inputEntry5_2">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="inputEntry5_3">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="outputEntry5_1">
+          <text>"DIRECTOR"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry5_2">
+          <text>72</text>
+        </outputEntry>
+      </rule>
+
+      <!-- Rule 6: High risk score - Director -->
+      <rule id="rule6">
+        <inputEntry id="inputEntry6_1">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="inputEntry6_2">
+          <text>&gt;= 80</text>
+        </inputEntry>
+        <inputEntry id="inputEntry6_3">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="outputEntry6_1">
+          <text>"DIRECTOR"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry6_2">
+          <text>72</text>
+        </outputEntry>
+      </rule>
+
+      <!-- Rule 7: Medium loans with high risk - Senior -->
+      <rule id="rule7">
+        <inputEntry id="inputEntry7_1">
+          <text>&lt; 100000</text>
+        </inputEntry>
+        <inputEntry id="inputEntry7_2">
+          <text>&gt;= 50</text>
+        </inputEntry>
+        <inputEntry id="inputEntry7_3">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="outputEntry7_1">
+          <text>"SENIOR"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry7_2">
+          <text>48</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+</definitions>

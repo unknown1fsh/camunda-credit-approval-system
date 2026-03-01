@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="risk-scoring-definitions" name="Risk Scoring Decision" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.0.0">
+  <decision id="risk-scoring-decision" name="Risk Scoring Decision">
+    <decisionTable id="decisionTable" hitPolicy="FIRST">
+      <input id="input1" label="Credit History (1-5)" camunda:inputVariable="creditHistory">
+        <inputExpression id="inputExpression1" typeRef="integer">
+          <text>creditHistory</text>
+        </inputExpression>
+      </input>
+      <input id="input2" label="Debt to Income Ratio (%)" camunda:inputVariable="debtToIncomeRatio">
+        <inputExpression id="inputExpression2" typeRef="double">
+          <text>debtToIncomeRatio</text>
+        </inputExpression>
+      </input>
+      <input id="input3" label="Loan Amount" camunda:inputVariable="loanAmount">
+        <inputExpression id="inputExpression3" typeRef="double">
+          <text>loanAmount</text>
+        </inputExpression>
+      </input>
+      <input id="input4" label="Employment Status" camunda:inputVariable="employmentStatus">
+        <inputExpression id="inputExpression4" typeRef="string">
+          <text>employmentStatus</text>
+        </inputExpression>
+      </input>
+      <input id="input5" label="Age" camunda:inputVariable="age">
+        <inputExpression id="inputExpression5" typeRef="integer">
+          <text>age</text>
+        </inputExpression>
+      </input>
+
+      <output id="output1" label="Risk Category" name="riskCategory" typeRef="string" />
+      <output id="output2" label="Risk Score" name="riskScore" typeRef="integer" />
+      <output id="output3" label="Recommended Action" name="recommendedAction" typeRef="string" />
+      <output id="output4" label="Max Loan Amount" name="maxLoanAmount" typeRef="double" />
+
+      <!-- Rule 1: Best case - Premium customer -->
+      <rule id="rule1">
+        <inputEntry id="inputEntry1_1">
+          <text>5</text>
+        </inputEntry>
+        <inputEntry id="inputEntry1_2">
+          <text>&lt; 30</text>
+        </inputEntry>
+        <inputEntry id="inputEntry1_3">
+          <text>&lt; 100000</text>
+        </inputEntry>
+        <inputEntry id="inputEntry1_4">
+          <text>"PERMANENT"</text>
+        </inputEntry>
+        <inputEntry id="inputEntry1_5">
+          <text>&gt;= 25</text>
+        </inputEntry>
+        <outputEntry id="outputEntry1_1">
+          <text>"LOW"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry1_2">
+          <text>15</text>
+        </outputEntry>
+        <outputEntry id="outputEntry1_3">
+          <text>"APPROVE"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry1_4">
+          <text>500000</text>
+        </outputEntry>
+      </rule>
+
+      <!-- Rule 2: Good customer -->
+      <rule id="rule2">
+        <inputEntry id="inputEntry2_1">
+          <text>[4..5]</text>
+        </inputEntry>
+        <inputEntry id="inputEntry2_2">
+          <text>&lt; 40</text>
+        </inputEntry>
+        <inputEntry id="inputEntry2_3">
+          <text>&lt; 200000</text>
+        </inputEntry>
+        <inputEntry id="inputEntry2_4">
+          <text>"PERMANENT"</text>
+        </inputEntry>
+        <inputEntry id="inputEntry2_5">
+          <text>&gt;= 25</text>
+        </inputEntry>
+        <outputEntry id="outputEntry2_1">
+          <text>"LOW"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry2_2">
+          <text>28</text>
+        </outputEntry>
+        <outputEntry id="outputEntry2_3">
+          <text>"APPROVE"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry2_4">
+          <text>400000</text>
+        </outputEntry>
+      </rule>
+
+      <!-- Rule 3: Medium risk -->
+      <rule id="rule3">
+        <inputEntry id="inputEntry3_1">
+          <text>[3..5]</text>
+        </inputEntry>
+        <inputEntry id="inputEntry3_2">
+          <text>&lt; 50</text>
+        </inputEntry>
+        <inputEntry id="inputEntry3_3">
+          <text>&lt; 150000</text>
+        </inputEntry>
+        <inputEntry id="inputEntry3_4">
+          <text>"PERMANENT","TEMPORARY"</text>
+        </inputEntry>
+        <inputEntry id="inputEntry3_5">
+          <text>&gt;= 22</text>
+        </inputEntry>
+        <outputEntry id="outputEntry3_1">
+          <text>"MEDIUM"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry3_2">
+          <text>42</text>
+        </outputEntry>
+        <outputEntry id="outputEntry3_3">
+          <text>"REVIEW"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry3_4">
+          <text>300000</text>
+        </outputEntry>
+      </rule>
+
+      <!-- Rule 4: Medium-High risk -->
+      <rule id="rule4">
+        <inputEntry id="inputEntry4_1">
+          <text>[2..3]</text>
+        </inputEntry>
+        <inputEntry id="inputEntry4_2">
+          <text>&lt; 60</text>
+        </inputEntry>
+        <inputEntry id="inputEntry4_3">
+          <text>&lt; 100000</text>
+        </inputEntry>
+        <inputEntry id="inputEntry4_4">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="inputEntry4_5">
+          <text>&gt;= 20</text>
+        </inputEntry>
+        <outputEntry id="outputEntry4_1">
+          <text>"MEDIUM"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry4_2">
+          <text>58</text>
+        </outputEntry>
+        <outputEntry id="outputEntry4_3">
+          <text>"REVIEW"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry4_4">
+          <text>150000</text>
+        </outputEntry>
+      </rule>
+
+      <!-- Rule 5: High risk -->
+      <rule id="rule5">
+        <inputEntry id="inputEntry5_1">
+          <text>[1..2]</text>
+        </inputEntry>
+        <inputEntry id="inputEntry5_2">
+          <text>&gt;= 60</text>
+        </inputEntry>
+        <inputEntry id="inputEntry5_3">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="inputEntry5_4">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="inputEntry5_5">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="outputEntry5_1">
+          <text>"HIGH"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry5_2">
+          <text>72</text>
+        </outputEntry>
+        <outputEntry id="outputEntry5_3">
+          <text>"REVIEW"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry5_4">
+          <text>75000</text>
+        </outputEntry>
+      </rule>
+
+      <!-- Rule 6: High risk - Self employed with high debt -->
+      <rule id="rule6">
+        <inputEntry id="inputEntry6_1">
+          <text>1</text>
+        </inputEntry>
+        <inputEntry id="inputEntry6_2">
+          <text>&gt;= 70</text>
+        </inputEntry>
+        <inputEntry id="inputEntry6_3">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="inputEntry6_4">
+          <text>"SELF_EMPLOYED"</text>
+        </inputEntry>
+        <inputEntry id="inputEntry6_5">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="outputEntry6_1">
+          <text>"HIGH"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry6_2">
+          <text>85</text>
+        </outputEntry>
+        <outputEntry id="outputEntry6_3">
+          <text>"REVIEW"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry6_4">
+          <text>50000</text>
+        </outputEntry>
+      </rule>
+
+      <!-- Rule 7: Critical - Very high debt ratio -->
+      <rule id="rule7">
+        <inputEntry id="inputEntry7_1">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="inputEntry7_2">
+          <text>&gt;= 80</text>
+        </inputEntry>
+        <inputEntry id="inputEntry7_3">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="inputEntry7_4">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="inputEntry7_5">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="outputEntry7_1">
+          <text>"CRITICAL"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry7_2">
+          <text>95</text>
+        </outputEntry>
+        <outputEntry id="outputEntry7_3">
+          <text>"REJECT"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry7_4">
+          <text>0</text>
+        </outputEntry>
+      </rule>
+
+      <!-- Rule 8: Critical - Poor credit + high amount + young age -->
+      <rule id="rule8">
+        <inputEntry id="inputEntry8_1">
+          <text>1</text>
+        </inputEntry>
+        <inputEntry id="inputEntry8_2">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="inputEntry8_3">
+          <text>&gt; 300000</text>
+        </inputEntry>
+        <inputEntry id="inputEntry8_4">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="inputEntry8_5">
+          <text>&lt; 20</text>
+        </inputEntry>
+        <outputEntry id="outputEntry8_1">
+          <text>"CRITICAL"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry8_2">
+          <text>98</text>
+        </outputEntry>
+        <outputEntry id="outputEntry8_3">
+          <text>"REJECT"</text>
+        </outputEntry>
+        <outputEntry id="outputEntry8_4">
+          <text>0</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+</definitions>

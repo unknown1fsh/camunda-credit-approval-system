@@ -1,0 +1,52 @@
+# === Build Output ===
+target/
+
+# === IDE ===
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+.cursor/
+out/
+
+# === Eclipse / STS ===
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# === NetBeans ===
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
+# === OS ===
+.DS_Store
+Thumbs.db
+
+# === Logs ===
+logs/
+*.log
+run_log*.txt
+
+# === Environment & Secrets ===
+.env
+
+# === Temporary & Debug Files ===
+*.temp
+*.tmp
+*.sql
+!src/main/resources/db/migration/*.sql
+
+# === Extracted JAR Artifacts ===
+/org/
+
+# === Maven Wrapper (keep .mvn but not the downloaded jar) ===
+!.mvn/wrapper/maven-wrapper.jar

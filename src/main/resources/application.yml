@@ -1,0 +1,189 @@
+spring:
+  application:
+    name: credit-approval-system
+
+  h2:
+    console:
+      enabled: false
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/credit_approval_db?currentSchema=public
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:your_password_here}
+    hikari:
+      connection-init-sql: "SET search_path TO public"
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        use_sql_comments: true
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+  flyway:
+    enabled: true
+    default-schema: public
+    create-schemas: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    baseline-version: 1
+    validate-on-migrate: false
+    clean-on-validation-error: false
+    clean-disabled: false
+
+# Camunda BPM Configuration
+camunda:
+  bpm:
+    admin-user:
+      id: admin
+      password: ${CAMUNDA_ADMIN_PASSWORD:admin}
+      firstName: Admin
+      lastName: User
+      email: admin@creditapp.com
+
+    filter:
+      create: All tasks
+
+    authorization:
+      enabled: false
+
+    job-execution:
+      enabled: true
+      deployment-aware: true
+      max-pool-size: 10
+      queue-capacity: 50
+
+    metrics:
+      enabled: true
+      db-reporter-activate: true
+
+    history-level: full
+
+    database:
+      type: postgres
+      schema-update: true
+
+    generic-properties:
+      properties:
+        enableExpressionsInAdhocQueries: true
+        enableXxeProcessing: false
+
+# External Task Client Configuration
+external-task:
+  base-url: http://localhost:8080/engine-rest
+  worker-id: credit-worker-${random.uuid}
+  max-tasks: 10
+  lock-duration: 600000  # 10 minutes
+  async-response-timeout: 10000
+  retry-timeout: 5000
+  backoff-strategy: exponential
+  topics:
+    credit-bureau:
+      lock-duration: 600000
+      retries: 3
+      topic-name: credit-bureau
+    fraud-detection:
+      lock-duration: 300000
+      retries: 2
+      topic-name: fraud-detection
+    scoring-engine:
+      lock-duration: 180000
+      retries: 3
+      topic-name: scoring-engine
+    notification:
+      lock-duration: 60000
+      retries: 5
+      topic-name: notification
+
+# Server Configuration
+server:
+  port: 8080
+  servlet:
+    context-path: /
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on_param
+
+# Application Configuration
+app:
+  credit:
+    min-age: 18
+    max-loan-amount: 1000000
+    min-loan-amount: 5000
+    default-currency: TRY
+    risk-threshold:
+      low: 35
+      medium: 65
+      high: 85
+    approval-limits:
+      manager: 100000
+      senior: 500000
+      director: 1000000
+
+  notification:
+    enabled: true
+    email:
+      enabled: true
+      from: noreply@creditapp.com
+    sms:
+      enabled: true
+      provider: mock
+
+  external-services:
+    credit-bureau:
+      url: http://localhost:8081/api/credit-bureau
+      timeout: 30000
+      retry-attempts: 3
+    fraud-detection:
+      url: http://localhost:8082/api/fraud-check
+      timeout: 15000
+      retry-attempts: 2
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    org.camunda: INFO
+    org.camunda.bpm.engine.impl.persistence.entity: DEBUG
+    com.creditapp: DEBUG
+    org.springframework.web: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} - %msg%n'
+    file: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
+  file:
+    name: logs/credit-approval-system.log
+    max-size: 10MB
+    max-history: 30
+
+# Management Endpoints (Actuator)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# SpringDoc OpenAPI Configuration
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+  packages-to-scan: com.creditapp.controller.api

@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  id="credit-approval-definitions"
+  targetNamespace="http://creditapp.com/bpmn"
+  exporter="Camunda Modeler"
+  exporterVersion="5.0.0">
+
+  <process id="credit-approval-main" name="Credit Approval Main Process - Boss Fight" isExecutable="true">
+
+    <!-- Start Event -->
+    <startEvent id="StartEvent_1" name="Application Submitted">
+      <outgoing>Flow_1</outgoing>
+    </startEvent>
+
+    <!-- Service Task: Validate Application -->
+    <serviceTask id="Activity_ValidateApplication" name="Validate Application" camunda:delegateExpression="${validateApplicationDelegate}">
+      <incoming>Flow_1</incoming>
+      <outgoing>Flow_FraudCheck</outgoing>
+    </serviceTask>
+
+    <!-- External Task: Fraud Detection -->
+    <serviceTask id="Activity_FraudDetection" name="Fraud Detection (External)" camunda:type="external" camunda:topic="fraud-detection">
+      <incoming>Flow_FraudCheck</incoming>
+      <outgoing>Flow_CreditBureau</outgoing>
+    </serviceTask>
+
+    <!-- Error Boundary Event: Fraud Detected -->
+    <boundaryEvent id="Event_FraudError" name="Fraud Detected" attachedToRef="Activity_FraudDetection">
+      <outgoing>Flow_FraudReject</outgoing>
+      <errorEventDefinition id="ErrorEventDefinition_1" errorRef="Error_Fraud" />
+    </boundaryEvent>
+
+    <!-- External Task: Credit Bureau Check -->
+    <serviceTask id="Activity_CreditBureau" name="Credit Bureau Check (External)" camunda:type="external" camunda:topic="credit-bureau">
+      <incoming>Flow_CreditBureau</incoming>
+      <outgoing>Flow_2</outgoing>
+    </serviceTask>
+
+    <!-- Service Task: Risk Scoring DMN -->
+    <serviceTask id="Activity_RiskScoring" name="Risk Scoring (DMN)" camunda:delegateExpression="${callDMNRiskEvaluationDelegate}">
+      <incoming>Flow_2</incoming>
+      <outgoing>Flow_3</outgoing>
+    </serviceTask>
+
+    <!-- Exclusive Gateway: Check Risk Level -->
+    <exclusiveGateway id="Gateway_RiskCheck" name="Risk Level?">
+      <incoming>Flow_3</incoming>
+      <outgoing>Flow_Critical</outgoing>
+      <outgoing>Flow_Normal</outgoing>
+    </exclusiveGateway>
+
+    <!-- Service Task: Auto Reject for Critical Risk -->
+    <serviceTask id="Activity_AutoReject" name="Auto Reject (Critical Risk)"
+        camunda:delegateExpression="${rollbackApplicationDelegate}">
+      <incoming>Flow_Critical</incoming>
+      <incoming>Flow_FraudReject</incoming>
+      <outgoing>Flow_ToEndReject</outgoing>
+    </serviceTask>
+
+    <!-- Business Rule Task: Determine Approver Level DMN -->
+    <businessRuleTask id="Activity_DetermineApprover" name="Determine Approver (DMN)"
+        camunda:resultVariable="approvalDecision"
+        camunda:decisionRef="approval-authority-decision"
+        camunda:mapDecisionResult="singleResult">
+      <incoming>Flow_Normal</incoming>
+      <outgoing>Flow_DocReq</outgoing>
+    </businessRuleTask>
+
+    <!-- Business Rule Task: Document Requirements DMN -->
+    <businessRuleTask id="Activity_DocumentRequirements" name="Document Requirements (DMN)"
+        camunda:resultVariable="documentRequirements"
+        camunda:decisionRef="document-requirements-decision"
+        camunda:mapDecisionResult="collectEntries">
+      <incoming>Flow_DocReq</incoming>
+      <outgoing>Flow_4</outgoing>
+    </businessRuleTask>
+
+    <!-- Service Task: Determine Dynamic Assignee -->
+    <serviceTask id="Activity_AssignApprover" name="Assign Approver Dynamically"
+        camunda:delegateExpression="${determineApproverDelegate}">
+      <incoming>Flow_4</incoming>
+      <outgoing>Flow_4b</outgoing>
+    </serviceTask>
+
+    <!-- User Task: Manager Approval -->
+    <userTask id="Activity_ManagerApproval" name="Manager Approval"
+        camunda:assignee="${taskAssignee}"
+        camunda:candidateGroups="managers">
+      <extensionElements>
+        <camunda:formData>
+          <camunda:formField id="approved" label="Approve?" type="boolean" />
+          <camunda:formField id="comments" label="Comments" type="string" />
+        </camunda:formData>
+      </extensionElements>
+      <incoming>Flow_4b</incoming>
+      <outgoing>Flow_5</outgoing>
+    </userTask>
+
+    <!-- Boundary Event: Timer for Escalation -->
+    <boundaryEvent id="Event_ApprovalTimeout" name="24h Timeout"
+        attachedToRef="Activity_ManagerApproval"
+        cancelActivity="false">
+      <outgoing>Flow_Escalate</outgoing>
+      <timerEventDefinition>
+        <timeDuration>PT24H</timeDuration>
+      </timerEventDefinition>
+    </boundaryEvent>
+
+    <!-- Service Task: Escalation -->
+    <serviceTask id="Activity_Escalate" name="Escalate to Senior"
+        camunda:delegateExpression="${escalateToSeniorDelegate}">
+      <incoming>Flow_Escalate</incoming>
+      <outgoing>Flow_EscalateEnd</outgoing>
+    </serviceTask>
+
+    <!-- Exclusive Gateway: Approval Decision -->
+    <exclusiveGateway id="Gateway_ApprovalDecision" name="Approved?">
+      <incoming>Flow_5</incoming>
+      <outgoing>Flow_Approved</outgoing>
+      <outgoing>Flow_Rejected</outgoing>
+    </exclusiveGateway>
+
+    <!-- External Task: Send Approval Notification -->
+    <serviceTask id="Activity_SendApprovalNotification" name="Send Approval Notification"
+        camunda:type="external" camunda:topic="notification">
+      <incoming>Flow_Approved</incoming>
+      <outgoing>Flow_ToEndApprove</outgoing>
+    </serviceTask>
+
+    <!-- Service Task: Compensation (Rollback) -->
+    <serviceTask id="Activity_Compensation" name="Execute Compensation"
+        camunda:delegateExpression="${rollbackApplicationDelegate}">
+      <incoming>Flow_Rejected</incoming>
+      <outgoing>Flow_NotifyReject</outgoing>
+    </serviceTask>
+
+    <!-- External Task: Send Rejection Notification -->
+    <serviceTask id="Activity_SendRejectionNotification" name="Send Rejection Notification"
+        camunda:type="external" camunda:topic="notification">
+      <incoming>Flow_NotifyReject</incoming>
+      <outgoing>Flow_ToEndReject2</outgoing>
+    </serviceTask>
+
+    <!-- End Events -->
+    <endEvent id="EndEvent_Approved" name="Application Approved">
+      <incoming>Flow_ToEndApprove</incoming>
+    </endEvent>
+
+    <endEvent id="EndEvent_Rejected" name="Application Rejected">
+      <incoming>Flow_ToEndReject</incoming>
+      <incoming>Flow_ToEndReject2</incoming>
+    </endEvent>
+
+    <endEvent id="EndEvent_Escalate" name="Escalation Triggered">
+      <incoming>Flow_EscalateEnd</incoming>
+    </endEvent>
+
+    <!-- Sequence Flows -->
+    <sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="Activity_ValidateApplication" />
+    <sequenceFlow id="Flow_FraudCheck" sourceRef="Activity_ValidateApplication" targetRef="Activity_FraudDetection" />
+    <sequenceFlow id="Flow_FraudReject" name="Fraud!" sourceRef="Event_FraudError" targetRef="Activity_AutoReject" />
+    <sequenceFlow id="Flow_CreditBureau" sourceRef="Activity_FraudDetection" targetRef="Activity_CreditBureau" />
+    <sequenceFlow id="Flow_2" sourceRef="Activity_CreditBureau" targetRef="Activity_RiskScoring" />
+    <sequenceFlow id="Flow_3" sourceRef="Activity_RiskScoring" targetRef="Gateway_RiskCheck" />
+
+    <sequenceFlow id="Flow_Critical" name="CRITICAL" sourceRef="Gateway_RiskCheck" targetRef="Activity_AutoReject">
+      <conditionExpression xsi:type="tFormalExpression">${riskCategory == 'CRITICAL'}</conditionExpression>
+    </sequenceFlow>
+
+    <sequenceFlow id="Flow_Normal" name="Other Risks" sourceRef="Gateway_RiskCheck" targetRef="Activity_DetermineApprover">
+      <conditionExpression xsi:type="tFormalExpression">${riskCategory != 'CRITICAL'}</conditionExpression>
+    </sequenceFlow>
+
+    <sequenceFlow id="Flow_ToEndReject" sourceRef="Activity_AutoReject" targetRef="EndEvent_Rejected" />
+    <sequenceFlow id="Flow_DocReq" sourceRef="Activity_DetermineApprover" targetRef="Activity_DocumentRequirements" />
+    <sequenceFlow id="Flow_4" sourceRef="Activity_DocumentRequirements" targetRef="Activity_AssignApprover" />
+    <sequenceFlow id="Flow_4b" sourceRef="Activity_AssignApprover" targetRef="Activity_ManagerApproval" />
+    <sequenceFlow id="Flow_5" sourceRef="Activity_ManagerApproval" targetRef="Gateway_ApprovalDecision" />
+    <sequenceFlow id="Flow_Escalate" sourceRef="Event_ApprovalTimeout" targetRef="Activity_Escalate" />
+    <sequenceFlow id="Flow_EscalateEnd" sourceRef="Activity_Escalate" targetRef="EndEvent_Escalate" />
+
+    <sequenceFlow id="Flow_Approved" name="Yes" sourceRef="Gateway_ApprovalDecision" targetRef="Activity_SendApprovalNotification">
+      <conditionExpression xsi:type="tFormalExpression">${approved == true}</conditionExpression>
+    </sequenceFlow>
+
+    <sequenceFlow id="Flow_Rejected" name="No" sourceRef="Gateway_ApprovalDecision" targetRef="Activity_Compensation">
+      <conditionExpression xsi:type="tFormalExpression">${approved == false}</conditionExpression>
+    </sequenceFlow>
+
+    <sequenceFlow id="Flow_NotifyReject" sourceRef="Activity_Compensation" targetRef="Activity_SendRejectionNotification" />
+    <sequenceFlow id="Flow_ToEndApprove" sourceRef="Activity_SendApprovalNotification" targetRef="EndEvent_Approved" />
+    <sequenceFlow id="Flow_ToEndReject2" sourceRef="Activity_SendRejectionNotification" targetRef="EndEvent_Rejected" />
+
+  </process>
+
+  <error id="Error_Fraud" name="FRAUD_DETECTED" errorCode="FRAUD_DETECTED" />
+</definitions>

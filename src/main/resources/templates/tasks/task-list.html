@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Görevlerim')}"></th:block>
+</head>
+<body>
+    <th:block th:replace="~{fragments/layout :: header}"></th:block>
+
+    <main class="bank-main">
+        <div class="bank-container">
+            <h1 class="bank-page-title"><i class="bi bi-check2-square me-2"></i>Görevlerim</h1>
+
+            <th:block th:if="${#lists.isEmpty(assignedTasks) and #lists.isEmpty(candidateTasks)}">
+                <div class="bank-card mb-4">
+                    <p class="bank-empty mb-0">
+                        Şu an size atanmış veya alabileceğiniz görev yok. Yeni başvurular geldikçe burada listelenecektir.
+                    </p>
+                    <p class="mt-3 mb-0">
+                        <a th:href="@{/applications}" class="bank-link">Başvuru listesine git</a> ·
+                        <a th:href="@{/dashboard}" class="bank-link">Dashboard</a>
+                    </p>
+                </div>
+            </th:block>
+
+            <th:block th:unless="${#lists.isEmpty(assignedTasks) and #lists.isEmpty(candidateTasks)}">
+                <h3 class="bank-section-title">Atanmış Görevler</h3>
+                <div class="bank-card mb-4">
+                    <table class="bank-table">
+                        <thead>
+                            <tr>
+                                <th>Görev</th>
+                                <th>Başvuru</th>
+                                <th>Öncelik</th>
+                                <th>Oluşturulma</th>
+                                <th>İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="task : ${assignedTasks}">
+                                <td>
+                                    <span th:text="${task.name}">Manager Approval</span>
+                                    <th:block th:if="${task.taskDefinitionKey == 'Activity_ManagerApproval'}">
+                                        <br><small class="text-muted">Yönetici onayı</small>
+                                    </th:block>
+                                </td>
+                                <td>
+                                    <a th:if="${taskApplicationIds[task.id] != null and taskApplicationIds[task.id] != '-'}" th:href="@{'/applications/' + ${taskApplicationIds[task.id]}}" th:text="${taskApplicationIds[task.id]}" class="bank-link">APP-2026-001</a>
+                                    <span th:unless="${taskApplicationIds[task.id] != null and taskApplicationIds[task.id] != '-'}" th:text="${taskApplicationIds[task.id] ?: '-'}">–</span>
+                                </td>
+                                <td th:classappend="${task.priority != null and task.priority > 50 ? 'text-danger fw-bold' : ''}" th:text="${task.priority != null ? task.priority : '-'}">50</td>
+                                <td th:text="${task.createTime != null ? #temporals.format(task.createTime, 'dd/MM/yyyy HH:mm') : '-'}">17/01/2026 15:30</td>
+                                <td>
+                                    <a th:href="@{'/tasks/' + ${task.id}}" class="bank-btn bank-btn-primary btn-sm">Tamamla</a>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(assignedTasks)}">
+                                <td colspan="5" class="bank-empty">Atanmış görev bulunmuyor.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="bank-section-title">Aday Görevler</h3>
+                <div class="bank-card mb-4">
+                    <table class="bank-table">
+                        <thead>
+                            <tr>
+                                <th>Görev</th>
+                                <th>Başvuru</th>
+                                <th>Öncelik</th>
+                                <th>Oluşturulma</th>
+                                <th>İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="task : ${candidateTasks}">
+                                <td>
+                                    <span th:text="${task.name}">Manager Approval</span>
+                                    <th:block th:if="${task.taskDefinitionKey == 'Activity_ManagerApproval'}">
+                                        <br><small class="text-muted">Yönetici onayı</small>
+                                    </th:block>
+                                </td>
+                                <td>
+                                    <a th:if="${taskApplicationIds[task.id] != null and taskApplicationIds[task.id] != '-'}" th:href="@{'/applications/' + ${taskApplicationIds[task.id]}}" th:text="${taskApplicationIds[task.id]}" class="bank-link">APP-2026-002</a>
+                                    <span th:unless="${taskApplicationIds[task.id] != null and taskApplicationIds[task.id] != '-'}" th:text="${taskApplicationIds[task.id] ?: '-'}">–</span>
+                                </td>
+                                <td th:text="${task.priority != null ? task.priority : '-'}">30</td>
+                                <td th:text="${task.createTime != null ? #temporals.format(task.createTime, 'dd/MM/yyyy HH:mm') : '-'}">17/01/2026 16:00</td>
+                                <td>
+                                    <form th:action="@{'/tasks/' + ${task.id} + '/claim'}" method="post" style="display: inline;">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                        <button type="submit" class="bank-btn bank-btn-outline btn-sm">Al</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(candidateTasks)}">
+                                <td colspan="5" class="bank-empty">Aday görev bulunmuyor.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </th:block>
+
+            <p class="mt-3"><a th:href="@{/applications}" class="bank-link">Başvurulara Dön</a></p>
+        </div>
+    </main>
+
+    <th:block th:replace="~{fragments/layout :: footer}"></th:block>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

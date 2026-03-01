@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Dashboard')}"></th:block>
+</head>
+<body>
+    <th:block th:replace="~{fragments/layout :: header}"></th:block>
+
+    <main class="bank-main">
+        <div class="bank-container">
+            <h1 class="bank-page-title"><i class="bi bi-speedometer2 me-2"></i>Kontrol Paneli</h1>
+
+            <section class="mb-4">
+                <h4 class="bank-section-title"><i class="bi bi-folder2-open me-2"></i>Başvuru İşlemleri</h4>
+                <div class="row g-4">
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card bank-dashboard-card">
+                            <div class="card-body">
+                                <div class="card-icon applications"><i class="bi bi-file-earmark-plus"></i></div>
+                                <h5 class="card-title">Yeni Kredi Başvurusu</h5>
+                                <p class="card-text text-muted small">Yeni kredi başvurusu oluşturun ve süreci başlatın.</p>
+                                <a href="/applications/new" class="bank-btn bank-btn-primary">Başvur</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card bank-dashboard-card">
+                            <div class="card-body">
+                                <div class="card-icon applications"><i class="bi bi-list-ul"></i></div>
+                                <h5 class="card-title">Başvuru Listesi</h5>
+                                <p class="card-text text-muted small">Tüm kredi başvurularını listeleyin.</p>
+                                <a href="/applications" class="bank-btn bank-btn-primary">Listele</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card bank-dashboard-card">
+                            <div class="card-body">
+                                <div class="card-icon applications"><i class="bi bi-check-circle"></i></div>
+                                <h5 class="card-title">Onaylanan Başvurular</h5>
+                                <p class="card-text text-muted small"><span th:text="${approvedCount}">0</span> adet onaylanan başvuru.</p>
+                                <a th:href="@{/applications(status='APPROVED')}" class="bank-btn bank-btn-primary">Görüntüle</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card bank-dashboard-card">
+                            <div class="card-body">
+                                <div class="card-icon applications"><i class="bi bi-x-circle"></i></div>
+                                <h5 class="card-title">Reddedilen Başvurular</h5>
+                                <p class="card-text text-muted small"><span th:text="${rejectedCount}">0</span> adet reddedilen başvuru.</p>
+                                <a th:href="@{/applications(status='REJECTED')}" class="bank-btn bank-btn-primary">Görüntüle</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card bank-dashboard-card">
+                            <div class="card-body">
+                                <div class="card-icon applications"><i class="bi bi-check2-square"></i></div>
+                                <h5 class="card-title">Görevlerim</h5>
+                                <p class="card-text text-muted small">Onay bekleyen görevleri yönetin.</p>
+                                <a href="/tasks" class="bank-btn bank-btn-primary">Görevler</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mb-4">
+                <h4 class="bank-section-title"><i class="bi bi-diagram-3 me-2"></i>Camunda BPM</h4>
+                <div class="row g-4">
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card bank-dashboard-card">
+                            <div class="card-body">
+                                <div class="card-icon camunda"><i class="bi bi-speedometer2"></i></div>
+                                <h5 class="card-title">Camunda Cockpit</h5>
+                                <p class="card-text text-muted small">Süreç izleme ve yönetimi.</p>
+                                <a href="/camunda" class="bank-btn bank-btn-gold" target="_blank">Cockpit</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card bank-dashboard-card">
+                            <div class="card-body">
+                                <div class="card-icon camunda"><i class="bi bi-clipboard-check"></i></div>
+                                <h5 class="card-title">Camunda Tasklist</h5>
+                                <p class="card-text text-muted small">Görev yönetimi.</p>
+                                <a href="/camunda/app/tasklist" class="bank-btn bank-btn-gold" target="_blank">Tasklist</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mb-4">
+                <h4 class="bank-section-title"><i class="bi bi-tools me-2"></i>Geliştirici Araçları</h4>
+                <div class="row g-4">
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card bank-dashboard-card">
+                            <div class="card-body">
+                                <div class="card-icon dev"><i class="bi bi-database"></i></div>
+                                <h5 class="card-title">H2 Console</h5>
+                                <p class="card-text text-muted small">Veritabanı yönetimi.</p>
+                                <a href="/h2-console" class="bank-btn bank-btn-success" target="_blank">H2 Console</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card bank-dashboard-card">
+                            <div class="card-body">
+                                <div class="card-icon dev"><i class="bi bi-file-earmark-code"></i></div>
+                                <h5 class="card-title">Swagger API</h5>
+                                <p class="card-text text-muted small">REST API dokümantasyonu.</p>
+                                <a href="/swagger-ui.html" class="bank-btn bank-btn-success" target="_blank">API Docs</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="bank-card">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <strong>Varsayılan Kullanıcılar:</strong>
+                        <code class="ms-1">admin</code>, <code>manager</code>, <code>analyst</code>, <code>risk</code> (şifre: aynı)
+                    </div>
+                    <div class="col-md-4 text-md-end mt-2 mt-md-0">
+                        <a href="/dashboard" class="bank-btn bank-btn-outline btn-sm">Yenile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <th:block th:replace="~{fragments/layout :: footer}"></th:block>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
