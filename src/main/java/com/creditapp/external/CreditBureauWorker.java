@@ -60,10 +60,11 @@ public class CreditBureauWorker {
                     } catch (Exception e) {
                         log.error("Error processing credit bureau check for {}: {}",
                                 applicationId, e.getMessage());
+                        Integer retries = externalTask.getRetries();
                         externalTaskService.handleFailure(externalTask,
                                 e.getMessage(),
                                 e.toString(),
-                                externalTask.getRetries() - 1,
+                                retries != null ? retries - 1 : 2,
                                 10000); // retry after 10 seconds
                     }
                 })

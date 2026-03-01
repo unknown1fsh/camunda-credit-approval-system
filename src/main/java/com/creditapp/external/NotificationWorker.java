@@ -52,10 +52,11 @@ public class NotificationWorker {
                                         } catch (Exception e) {
                                                 log.error("Error sending notification for {}: {}",
                                                                 applicationId, e.getMessage());
+                                                Integer retries = externalTask.getRetries();
                                                 externalTaskService.handleFailure(externalTask,
                                                                 e.getMessage(),
                                                                 e.toString(),
-                                                                externalTask.getRetries() - 1,
+                                                                retries != null ? retries - 1 : 2,
                                                                 5000);
                                         }
                                 })
